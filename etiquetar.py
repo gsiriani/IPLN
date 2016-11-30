@@ -77,7 +77,7 @@ def tag (sent):
                    tag = a.get_tag(),
                    prob = a.get_prob(),
                    analysis = len(an),
-                    sent=a,ls=ls, palabras = 0)
+                    sent=a,ls=ls, palabras = 0, ner=a.get_tag())
         
         # Chequeo si la palabra es parte de una contraccion
         if (indice_original < len(sent)) and ((w.get_form() == sent[indice_original].get_form()) or (sent[indice_original].get_form() in w.get_form())):
@@ -92,14 +92,14 @@ def tag (sent):
                                tag = a.get_tag(),
                                prob = a.get_prob(),
                                analysis = len(an),
-                               sent=a,ls=ls, palabras = 0)
+                               sent=a,ls=ls, palabras = 0, ner=a.get_tag())
                     else:
                         wse_comp = dict(wordform =  sent[indice_original].get_form(),
                                lemma = a.get_lemma(),
-                               tag = a.get_tag() + "I",
+                               tag = a.get_tag(),
                                prob = a.get_prob(),
                                analysis = len(an),
-                               sent=a,ls=ls, palabras = 0)
+                               sent=a,ls=ls, palabras = 0, ner=a.get_tag() + "I")
                     contador_palabra+=1
                     wss_comp_aux.append(wse_comp)
                     indice_original += 1
@@ -132,7 +132,7 @@ def tag (sent):
                                      tag = '_',
                                      prob = 0,
                                      analysis = 0,
-                                     sent=sent[indice_original].get_form(),ls='_', palabras = 1)                  
+                                     sent=sent[indice_original].get_form(),ls='_', palabras = 1, ner=a.get_tag())                  
                         indice_original += 1     
                         in_contr = True
 
@@ -178,7 +178,7 @@ def getLine(sentencia):
                                             sentencia['lemma'].encode('utf-8'), 
                                             tagToStr(tagset.get_short_tag(sentencia['tag'])) if sentencia['tag'] != '_' else '_', 
                                             tagset.get_msd_string(sentencia['tag']) if sentencia['tag'] != '_' else '_',
-                                            tagToBIO(sentencia['tag'])
+                                            tagToBIO(sentencia['ner'])
                                            )
 
 def getLines(oracion):
@@ -196,14 +196,15 @@ def getLines(oracion):
 
 
 corpus_taggeado = []
-for i, s in enumerate(sentencias[0:1]):       
-    corpus_taggeado.append("# " + str(i))
-    l = tk.tokenize(s)
-    ls = sp.split(l) # old value 0
-    for oracion in ls:
-        tagged = tag(oracion)
-        corpus_taggeado.append(getLines(tagged))
-        corpus_taggeado.append("\n")
+for i, s in enumerate(sentencias[0:249]):  
+	print 'Sentencia nro: ' + str(i)     
+	corpus_taggeado.append("# " + str(i))
+	l = tk.tokenize(s)
+	ls = sp.split(l) # old value 0
+	for oracion in ls:
+		tagged = tag(oracion)
+		corpus_taggeado.append(getLines(tagged))
+		corpus_taggeado.append("\n")
 
         
-open("sentencias_etiquetadas_0-1", "w").write(BOM_UTF8 + "\n".join(corpus_taggeado))
+open("sentencias_etiquetadas_0-249", "w").write(BOM_UTF8 + "\n".join(corpus_taggeado))
