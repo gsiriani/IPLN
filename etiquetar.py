@@ -51,7 +51,6 @@ nec = freeling.nec(DATA+LANG+"/nerc/nec/nec-ab-poor1.dat")
 # ukb = freeling.ukb(DATA+LANG+"/ukb.dat")
 
 
-
 # Función que etiqueta las palabras de una oración 
 def tag (sent):
     out = {}
@@ -77,14 +76,14 @@ def tag (sent):
                    tag = a.get_tag(),
                    prob = a.get_prob(),
                    analysis = len(an),
-                    sent=a,ls=ls, palabras = 0, ner=a.get_tag())
+                    sent=a,ls=ls, palabras = 0, ner= a.get_tag())
         
         # Chequeo si la palabra es parte de una contraccion
         if (indice_original < len(sent)) and ((w.get_form() == sent[indice_original].get_form()) or (sent[indice_original].get_form() in w.get_form())):
             if (sent[indice_original].get_form() in w.get_form()):
                 # Palabra compuesta
-                contador_palabra = 0
-                wss_comp_aux = []
+                contador_palabra=0
+                wss_comp_aux=[]
                 while (indice_original < len(sent)) and (sent[indice_original].get_form() in w.get_form()):
                     if (contador_palabra==0):
                         wse_comp = dict(wordform =  sent[indice_original].get_form(),
@@ -92,14 +91,14 @@ def tag (sent):
                                tag = a.get_tag(),
                                prob = a.get_prob(),
                                analysis = len(an),
-                               sent=a,ls=ls, palabras = 0, ner=a.get_tag())
+                               sent=a,ls=ls, palabras = 0, ner= a.get_tag())
                     else:
                         wse_comp = dict(wordform =  sent[indice_original].get_form(),
                                lemma = a.get_lemma(),
                                tag = a.get_tag(),
                                prob = a.get_prob(),
                                analysis = len(an),
-                               sent=a,ls=ls, palabras = 0, ner=a.get_tag() + "I")
+                               sent=a,ls=ls, palabras = 0, ner= a.get_tag()+'I')
                     contador_palabra+=1
                     wss_comp_aux.append(wse_comp)
                     indice_original += 1
@@ -132,7 +131,7 @@ def tag (sent):
                                      tag = '_',
                                      prob = 0,
                                      analysis = 0,
-                                     sent=sent[indice_original].get_form(),ls='_', palabras = 1, ner=a.get_tag())                  
+                                     sent=sent[indice_original].get_form(),ls='_', palabras = 1, ner= a.get_tag())                  
                         indice_original += 1     
                         in_contr = True
 
@@ -170,6 +169,14 @@ def tagToBIO(tag):
         return "B-ORG"
     elif tag == "NP00V00":
         return "B-OTR"
+    elif tag == "NP00SP0I":
+        return "I-PER"
+    elif tag == "NP00G00I":
+        return "I-LOC"
+    elif tag == "NP00O00I":
+        return "I-ORG"
+    elif tag == "NP00V00I":
+        return "I-OTR"
     else:
         return "O"
 
@@ -178,7 +185,7 @@ def getLine(sentencia):
                                             sentencia['lemma'].encode('utf-8'), 
                                             tagToStr(tagset.get_short_tag(sentencia['tag'])) if sentencia['tag'] != '_' else '_', 
                                             tagset.get_msd_string(sentencia['tag']) if sentencia['tag'] != '_' else '_',
-                                            tagToBIO(sentencia['ner'])
+                                            tagToBIO(sentencia['ner'].encode('utf-8'))
                                            )
 
 def getLines(oracion):
@@ -194,11 +201,11 @@ def getLines(oracion):
     #return "\n".join([str(i) + "\t" + getLine(s) for i, s in enumerate(oracion, start=1)])
 
 
-
+inicio = 2000
 corpus_taggeado = []
-for i, s in enumerate(sentencias[0:249]):  
-	print 'Sentencia nro: ' + str(i)     
-	corpus_taggeado.append("# " + str(i))
+for i, s in enumerate(sentencias[inicio:inicio + 250]):  
+	print 'Sentencia nro: ' + str(inicio + i)     
+	corpus_taggeado.append("# " + str(inicio + i))
 	l = tk.tokenize(s)
 	ls = sp.split(l) # old value 0
 	for oracion in ls:
@@ -207,4 +214,4 @@ for i, s in enumerate(sentencias[0:249]):
 		corpus_taggeado.append("\n")
 
         
-open("sentencias_etiquetadas_0-249", "w").write(BOM_UTF8 + "\n".join(corpus_taggeado))
+open("sentencias_etiquetadas_" + str(inicio) + "-" + str(inicio+250) + ".txt", "w").write(BOM_UTF8 + "\n".join(corpus_taggeado))
